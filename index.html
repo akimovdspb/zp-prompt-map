@@ -1,0 +1,894 @@
+<title>Карта сценария — ЦКМ, зарплатный проект (ред. 24.07.26)</title>
+
+<style>
+:root{
+  --paper:#F4F6F3;
+  --card:#FFFFFF;
+  --rail:#EBEEE9;
+  --ink:#111815;
+  --ink-2:#465049;
+  --ink-3:#6E7A73;
+  --line:#D2D9D3;
+  --line-2:#BFC8C1;
+  --accent:#1F6E43;
+  --accent-2:#2E8B58;
+  --accent-soft:#DCEBE2;
+  --say:#1F6E43;
+  --ask:#8A5A00;
+  --ask-soft:#F6EBD4;
+  --stop:#A3342A;
+  --stop-soft:#F5DDD9;
+  --svc:#5A6B8C;
+  --svc-soft:#E1E7F1;
+  --shadow:0 1px 2px rgba(16,30,22,.06),0 8px 24px rgba(16,30,22,.07);
+  --mono:ui-monospace,"Cascadia Mono","Consolas","DejaVu Sans Mono",monospace;
+  --sans:"Segoe UI",system-ui,ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --serif:Georgia,"Times New Roman","Droid Serif",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0E1311;--card:#161D19;--rail:#131A17;--ink:#E7EDE9;--ink-2:#AAB6AF;--ink-3:#7E8C85;
+    --line:#26302B;--line-2:#33403A;--accent:#5FBE8A;--accent-2:#77CE9D;--accent-soft:#1A2A22;
+    --say:#5FBE8A;--ask:#D6A455;--ask-soft:#2A2317;--stop:#E08376;--stop-soft:#2C1A17;
+    --svc:#93A6C6;--svc-soft:#1A202B;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1311;--card:#161D19;--rail:#131A17;--ink:#E7EDE9;--ink-2:#AAB6AF;--ink-3:#7E8C85;
+  --line:#26302B;--line-2:#33403A;--accent:#5FBE8A;--accent-2:#77CE9D;--accent-soft:#1A2A22;
+  --say:#5FBE8A;--ask:#D6A455;--ask-soft:#2A2317;--stop:#E08376;--stop-soft:#2C1A17;
+  --svc:#93A6C6;--svc-soft:#1A202B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{
+  --paper:#F4F6F3;--card:#FFFFFF;--rail:#EBEEE9;--ink:#111815;--ink-2:#465049;--ink-3:#6E7A73;
+  --line:#D2D9D3;--line-2:#BFC8C1;--accent:#1F6E43;--accent-2:#2E8B58;--accent-soft:#DCEBE2;
+  --say:#1F6E43;--ask:#8A5A00;--ask-soft:#F6EBD4;--stop:#A3342A;--stop-soft:#F5DDD9;
+  --svc:#5A6B8C;--svc-soft:#E1E7F1;
+  --shadow:0 1px 2px rgba(16,30,22,.06),0 8px 24px rgba(16,30,22,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;text-wrap:balance}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:258px minmax(0,1fr) 366px;grid-template-rows:auto minmax(0,1fr);height:100vh;height:100dvh}
+.top{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:10px 18px;background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;flex-direction:column;gap:1px;margin-right:auto}
+.brand h1{font-size:15px;font-weight:650;letter-spacing:-.01em}
+.brand .sub{font-size:11.5px;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase}
+.search{position:relative;display:flex;align-items:center}
+.search input{width:250px;padding:7px 30px 7px 11px;border:1px solid var(--line-2);border-radius:7px;
+  background:var(--paper);color:var(--ink);font:inherit;font-size:13.5px}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.search .k{position:absolute;right:8px;font:600 10px/1 var(--mono);color:var(--ink-3);
+  border:1px solid var(--line-2);border-radius:3px;padding:3px 4px;pointer-events:none}
+.zoombar{display:flex;gap:4px}
+button.btn{font:inherit;font-size:13px;padding:6px 11px;border:1px solid var(--line-2);border-radius:7px;
+  background:var(--card);color:var(--ink-2);cursor:pointer}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button.btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] button.btn.on,
+@media (prefers-color-scheme:dark){button.btn.on{color:#0E1311}}
+
+/* ---------- rail ---------- */
+.rail{background:var(--rail);border-right:1px solid var(--line);overflow-y:auto;padding:14px 12px 40px}
+.rail h2{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:16px 4px 7px}
+.rail h2:first-child{margin-top:2px}
+.legend{display:flex;flex-direction:column;gap:5px;padding:0 4px}
+.lg{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2)}
+.sw{width:15px;height:15px;border-radius:4px;flex:none;border:1.5px solid}
+.sw.say{background:var(--card);border-color:var(--say)}
+.sw.ask{background:var(--ask-soft);border-color:var(--ask)}
+.sw.svc{background:var(--svc-soft);border-color:var(--svc);border-style:dashed}
+.sw.end{background:var(--stop-soft);border-color:var(--stop)}
+.filters{display:flex;flex-wrap:wrap;gap:5px;padding:0 4px}
+.chip{font:inherit;font-size:12px;padding:4px 9px;border-radius:20px;border:1px solid var(--line-2);
+  background:var(--card);color:var(--ink-2);cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .chip.on{color:#0E1311}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+details.lib{border:1px solid var(--line);border-radius:8px;background:var(--card);margin:0 0 6px}
+details.lib summary{cursor:pointer;padding:8px 11px;font-size:13px;font-weight:600;display:flex;
+  align-items:center;justify-content:space-between;gap:8px;list-style:none;border-radius:8px}
+details.lib summary::-webkit-details-marker{display:none}
+details.lib summary .n{font:600 11px/1 var(--mono);color:var(--ink-3);background:var(--paper);
+  border:1px solid var(--line);border-radius:20px;padding:3px 7px}
+details.lib[open] summary{border-bottom:1px solid var(--line);border-radius:8px 8px 0 0}
+.lib ul{list-style:none;margin:0;padding:5px}
+.lib li{margin:0}
+.lib li button{display:block;width:100%;text-align:left;font:inherit;font-size:12.5px;line-height:1.4;
+  padding:6px 8px;border:0;border-radius:6px;background:transparent;color:var(--ink-2);cursor:pointer}
+.lib li button:hover{background:var(--accent-soft);color:var(--ink)}
+.lib li button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.lib li button.sel{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .lib li button.sel{color:#0E1311}
+.lib li button .ln{font:500 10.5px/1 var(--mono);color:var(--ink-3);margin-right:6px}
+.lib li button.sel .ln{color:inherit;opacity:.75}
+
+/* ---------- canvas ---------- */
+.stage{position:relative;overflow:hidden;background:
+  radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0) 0 0/26px 26px,var(--paper);
+  cursor:grab}
+.stage.drag{cursor:grabbing}
+.stage svg{display:block;width:100%;height:100%;touch-action:none}
+.hint{position:absolute;left:14px;bottom:12px;font-size:11.5px;color:var(--ink-3);
+  background:color-mix(in srgb,var(--card) 88%,transparent);border:1px solid var(--line);
+  border-radius:7px;padding:5px 9px;pointer-events:none}
+.node{cursor:pointer}
+.node .box{fill:var(--card);stroke:var(--line-2);stroke-width:1.5;rx:10}
+.node .edgebar{rx:2}
+.node text{pointer-events:none}
+.node .ttl{font:600 13px/1.3 var(--sans);fill:var(--ink)}
+.node .qt{font:italic 12.5px/1.35 var(--serif);fill:var(--ink-2)}
+.node .stg{font:600 9.5px/1 var(--mono);fill:var(--ink-3);letter-spacing:.06em}
+.node[data-t="say"] .box{stroke:var(--say)}
+.node[data-t="ask"] .box{fill:var(--ask-soft);stroke:var(--ask)}
+.node[data-t="service"] .box{fill:var(--svc-soft);stroke:var(--svc);stroke-dasharray:5 3}
+.node[data-t="end"] .box{fill:var(--stop-soft);stroke:var(--stop)}
+.node[data-t="start"] .box{fill:var(--accent);stroke:var(--accent)}
+.node[data-t="start"] .ttl,.node[data-t="start"] .stg{fill:#fff}
+:root[data-theme="dark"] .node[data-t="start"] .ttl,
+:root[data-theme="dark"] .node[data-t="start"] .stg{fill:#0E1311}
+.node:hover .box{stroke-width:2.5}
+.node.sel .box{stroke:var(--accent);stroke-width:3}
+.node.dim{opacity:.16}
+.node.hit .box{stroke:var(--accent);stroke-width:3}
+.edge{fill:none;stroke:var(--line-2);stroke-width:1.8}
+.edge.dim{opacity:.12}
+.elabel{font:600 10.5px/1 var(--sans);fill:var(--ink-3)}
+.elabel.dim{opacity:.12}
+.elabel-bg{fill:var(--paper)}
+.elabel-bg.dim{opacity:.12}
+.swim{font:600 10.5px/1 var(--mono);fill:var(--ink-3);letter-spacing:.14em}
+.swimline{stroke:var(--line);stroke-width:1;stroke-dasharray:2 6}
+.swim.dim,.swimline.dim{opacity:.3}
+
+/* ---------- detail ---------- */
+.detail{background:var(--card);border-left:1px solid var(--line);overflow-y:auto;padding:0}
+.dwrap{padding:16px 18px 48px}
+.dempty{color:var(--ink-3);font-size:13.5px;padding:22px 18px}
+.dempty p{margin:0 0 10px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.badge{font:600 10.5px/1 var(--mono);letter-spacing:.05em;padding:5px 8px;border-radius:5px;
+  border:1px solid var(--line-2);color:var(--ink-3);background:var(--paper)}
+.badge.say{color:var(--say);border-color:var(--say);background:transparent}
+.badge.ask{color:var(--ask);border-color:var(--ask);background:var(--ask-soft)}
+.badge.service{color:var(--svc);border-color:var(--svc);background:var(--svc-soft)}
+.badge.end{color:var(--stop);border-color:var(--stop);background:var(--stop-soft)}
+.badge.start{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.dwrap h3{font-size:17px;font-weight:650;letter-spacing:-.01em;margin-bottom:4px}
+.dsrc{font:500 11.5px/1 var(--mono);color:var(--ink-3);margin-bottom:14px}
+.saybox{border-left:3px solid var(--say);background:var(--paper);border-radius:0 8px 8px 0;
+  padding:12px 14px;margin:0 0 12px}
+.saybox .lbl{font:600 10px/1 var(--mono);letter-spacing:.08em;color:var(--say);
+  text-transform:uppercase;display:block;margin-bottom:7px}
+.saybox p{font-family:var(--serif);font-size:14.5px;line-height:1.6;margin:0 0 9px;color:var(--ink)}
+.saybox p:last-child{margin-bottom:0}
+.note{font-size:13.5px;color:var(--ink-2);margin:0 0 11px}
+.note strong{color:var(--ink);font-weight:600}
+.wait{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--mono);
+  color:var(--ask);background:var(--ask-soft);border:1px solid var(--ask);
+  border-radius:20px;padding:5px 10px;margin:0 0 12px}
+.nexts{margin:14px 0 0;border-top:1px solid var(--line);padding-top:12px}
+.nexts .lbl{font:600 10px/1 var(--mono);letter-spacing:.08em;color:var(--ink-3);
+  text-transform:uppercase;display:block;margin-bottom:8px}
+.nexts ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.nexts button{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;font:inherit;
+  font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;
+  background:var(--paper);color:var(--ink-2);cursor:pointer}
+.nexts button:hover{border-color:var(--accent);color:var(--accent)}
+.nexts button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.nexts .cond{font-weight:600;color:var(--ink);flex:none}
+.dlist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.dlist li{font-size:13.5px;color:var(--ink-2);padding-left:15px;position:relative;line-height:1.55}
+.dlist li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:50%;background:var(--accent)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .shell{grid-template-columns:250px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 300px}
+  .detail{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}
+}
+@media (max-width:780px){
+  .shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 220px minmax(0,1fr) 320px;height:auto}
+  .rail{border-right:0;border-bottom:1px solid var(--line);max-height:320px}
+  .stage{min-height:380px}
+  .search input{width:170px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <h1>Карта сценария — зарплатный проект</h1>
+      <div class="sub">ЦКМ · промпт целевой ред. 24.07.26 · 334 строки</div>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Поиск по фразам и узлам…" aria-label="Поиск по карте">
+      <span class="k">/</span>
+    </div>
+    <div class="zoombar">
+      <button class="btn" id="zout" title="Отдалить">−</button>
+      <button class="btn" id="zin" title="Приблизить">+</button>
+      <button class="btn" id="zstart">К началу</button>
+      <button class="btn" id="zfit">Вся карта</button>
+    </div>
+  </header>
+
+  <aside class="rail">
+    <h2>Условные обозначения</h2>
+    <div class="legend">
+      <div class="lg"><span class="sw say"></span> Реплика — произносится вслух</div>
+      <div class="lg"><span class="sw ask"></span> Вопрос — ждать ответа клиента</div>
+      <div class="lg"><span class="sw svc"></span> Служебное — вслух НЕ произносить</div>
+      <div class="lg"><span class="sw end"></span> Завершение диалога</div>
+    </div>
+
+    <h2>Ветки сценария</h2>
+    <div class="filters" id="filters"></div>
+
+    <h2>Библиотеки (срабатывают в любой точке)</h2>
+    <div id="libs"></div>
+  </aside>
+
+  <main class="stage" id="stage">
+    <svg id="svg" role="img" aria-label="Схема сценария диалога">
+      <defs>
+        <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--line-2)"></path>
+        </marker>
+      </defs>
+      <g id="cam">
+        <g id="gswim"></g>
+        <g id="gedge"></g>
+        <g id="glabel"></g>
+        <g id="gnode"></g>
+      </g>
+    </svg>
+    <div class="hint">Тянуть — двигать · колесо — масштаб · клик по узлу — точная формулировка</div>
+  </main>
+
+  <section class="detail" id="detail">
+    <div class="dempty">
+      <p><strong>Выберите узел на схеме</strong> — справа появится точная формулировка из промпта с номером строки.</p>
+      <p>Курсив с засечками = то, что Анна произносит вслух. Так же устроен и сам промпт: «текст в кавычках — это то, что ты произносишь клиенту; заголовки и условия — служебные».</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   ДАННЫЕ. Каждый узел — точная цитата из
+   «Промпт целевой ред. 24.07.26.txt» с номерами строк.
+   ========================================================= */
+var W=250, H=64;
+
+var NODES=[
+ {id:"start",x:880,y:44,t:"start",b:["core"],stage:"ВХОД",ttl:"Исходящий звонок",lines:"1, 40",
+  note:"Анна — виртуальный голосовой помощник Сбера. Звонок <strong>всегда исходящий</strong>. НИКОГДА не спрашивай клиента, зачем или по какому вопросу он звонит.",
+  next:[["","e1_greet"]]},
+
+ /* ---------- ЭТАП 1 ---------- */
+ {id:"e1_greet",x:880,y:132,t:"say",b:["core"],stage:"ЭТАП 1",ttl:"Приветствие",lines:"117–118",
+  say:["Добрый день, {clientName}. Меня зовут Анна, Сбер."],
+  note:"Этап 1 — <strong>НЕ ПРОПУСКАТЬ</strong>. Поздоровайся, представься, обозначь, по какой организации или ИП звонишь.",
+  next:[["","e1_org"]]},
+
+ {id:"e1_org",x:880,y:232,t:"say",b:["core"],stage:"ЭТАП 1",ttl:"Строка про организацию",lines:"103–104, 119",
+  say:["Звоню вам по вашему ИП.","Звоню вам по вашей организации {organizationName}."],
+  note:"Первый вариант — <strong>ТОЛЬКО</strong> если в {organizationName} явно указано ИП («ИП Иванов») или клиент сам сказал, что у него ИП; слова клиента приоритетнее базы. Во всех остальных случаях — второй вариант, обязательно произнося название. Название ИП в приветствии не упоминается.",
+  next:[["","e1_conv"]]},
+
+ {id:"e1_conv",x:880,y:336,t:"ask",b:["core"],stage:"ЭТАП 1",ttl:"Удобно говорить?",lines:"120",
+  say:["Удобно сейчас говорить?"],wait:true,
+  note:"Ответ «нет» здесь — <strong>не отказ от продукта</strong>, а неудобство разговора: причину не спрашивай, действуй по стоп-условию 5 (перезвон).",
+  next:[["да","e2_q"],["нет","stop5"]]},
+
+ {id:"stop5",x:1480,y:336,t:"end",b:["refuse"],stage:"1.4 п.5",ttl:"Перезвоним позже",lines:"63",
+  say:["Хорошо, мы вам перезвоним. До свидания."],
+  note:"<strong>ВАЖНО:</strong> не называй и не фиксируй конкретные дату и время. Даже если клиент называет срок (через час, завтра, через неделю) — не подтверждай его. Если неудобно именно <em>оформлять</em>, а разговор продолжается — перезвон не назначай, иди в этап 6 (материалы/СМС)."},
+
+ /* ---------- ЭТАП 2 ---------- */
+ {id:"e2_q",x:880,y:452,t:"ask",b:["core"],stage:"ЭТАП 2",ttl:"Есть сотрудники?",lines:"123–124",
+  say:["{clientName}, обратили внимание, что у вас нет зарплатного проекта в Сбере. Скажите, у вас есть сотрудники?"],wait:true,
+  note:"Если обращение по имени только что прозвучало в приветствии, здесь имя можно опустить. Ответ «нет» на этот вопрос — <strong>ответ по ситуации, а не отказ</strong>.",
+  next:[["есть сотрудники","pres_emp"],["нет сотрудников","e2_sez"],["не ведём деятельность","end_inactive"],["неопределённо","e2_undef"]]},
+
+ {id:"e2_undef",x:1215,y:592,t:"ask",b:["core"],stage:"ЭТАП 2",ttl:"Неопределённый ответ",lines:"142",
+  say:["Поняла. А сотрудники у вас сейчас есть?"],wait:true,
+  note:"Ответы «никак», «не выплачиваем», «зарплаты нет» — <strong>НЕ выбирай ветку сама</strong>, сначала уточни. Если клиент говорит, что деятельность не ведётся — раздел 3.2.",
+  see:[["по ответу — назад в развилку","e2_q"]]},
+
+ {id:"end_inactive",x:1545,y:592,t:"end",b:["inactive"],stage:"3.2",ttl:"Деятельность не ведётся",lines:"206",
+  say:["Поняла вас. Тогда зарплатный проект сейчас вам не актуален. Хорошего дня, до свидания!"],
+  note:"Бизнес приостановлен, закрывается, закрыт, лицензия сдана — для <strong>любой</strong> формы (и ИП, и ООО). НЕ перечисляй преимущества, не говори «бесплатно» и про экономию, даже кратко."},
+
+ {id:"e2_sez",x:535,y:592,t:"ask",b:["sez","leader","ip"],stage:"ЭТАП 2",ttl:"Работаете с самозанятыми?",lines:"125–126",
+  say:["А вы работаете с самозанятыми?"],wait:true,
+  next:[["есть самозанятые","pres_sez"],["нет","e2_form"]]},
+
+ {id:"e2_form",x:410,y:712,t:"service",b:["leader","ip"],stage:"ЭТАП 2",ttl:"Проверка формы бизнеса",lines:"127, 140",
+  note:"СРАЗУ снова проверь исходное значение {organizationName}, учитывая явные уточнения клиента — <strong>слова клиента приоритетнее</strong>. <strong>Никогда не определяй форму бизнеса по отсутствию сотрудников или самозанятых.</strong>",
+  next:[["ООО","e2_leader"],["ИП","end_ip"],["форма неизвестна","e2_askform"]]},
+
+ {id:"e2_askform",x:40,y:712,t:"ask",b:["leader","ip"],stage:"ЭТАП 2",ttl:"У вас ИП или ООО?",lines:"138–139",
+  say:["Подскажите, у вас ИП или ООО?"],wait:true,
+  note:"Если в {organizationName} нет ни «ООО», ни «ИП» и клиент не называл форму: <strong>НЕ выбирай ветку ИП и НЕ завершай разговор.</strong>",
+  see:[["по ответу — назад к ветке ООО / ИП","e2_form"]]},
+
+ {id:"end_ip",x:40,y:842,t:"end",b:["ip"],stage:"3.2",ttl:"ИП без сотрудников",lines:"205, 317",
+  say:["Поняла вас. Зарплатный проект доступен вам бесплатно — когда ситуация в бизнесе изменится, сможете сэкономить на комиссии за переводы физлицам. Если появятся вопросы — звоните 0321, добавочный один. Хорошего дня, до свидания!"],
+  note:"Эта фраза разрешена <strong>ТОЛЬКО</strong> для ИП без сотрудников и самозанятых (продублировано в блоке ОГРАНИЧЕНИЯ, п. 4). Для ООО без сотрудников и самозанятых ОБЯЗАТЕЛЕН вопрос про роль руководителя."},
+
+ {id:"e2_leader",x:345,y:842,t:"ask",b:["leader"],stage:"ЭТАП 2",ttl:"Вы руководитель?",lines:"128–135",
+  say:["Подскажите, а вы руководитель организации?"],wait:true,
+  note:"Для ООО: <strong>НЕ завершай разговор</strong>, НЕ используй фразу для ИП, НЕ считай продукт неактуальным только из-за отсутствия сотрудников и самозанятых.",
+  next:[["руководитель","pres_leader"],["не руководитель","e2_sms"]]},
+
+ {id:"e2_sms",x:40,y:972,t:"ask",b:["leader"],stage:"ЭТАП 2",ttl:"СМС для руководителя",lines:"135",
+  say:["Могу отправить вам СМС с описанием зарплатного проекта, чтобы вы передали руководителю. Отправить?"],wait:true,
+  note:"Не руководитель — <strong>про выплаты себе не говори</strong>. При согласии — СМС с описанием по правилам этапа 6, при отказе вежливо заверши разговор.",
+  next:[["согласие","e6_desc"]],see:[["отказ","e6_bye"]]},
+
+ /* ---------- ЭТАП 3 ---------- */
+ {id:"pres_leader",x:345,y:1000,t:"say",b:["leader"],stage:"ЭТАП 3",ttl:"Презентация «Руководителю»",lines:"153–154",
+  say:["Зарплатный проект используют, чтобы выплачивать средства себе. Вы сможете экономить лимит на переводы физлицам в подписке СберБизнес Прайм, получить сниженные ставки по личным кредитам и ипотеке, а также понизить ставку по бизнес-кредиту до двух процентных пунктов. Кроме того, вы получите вознаграждение за рекомендацию зарплатного проекта партнёрам. Хотели бы подключить? Это бесплатно."],
+  note:"<strong>ТОЛЬКО</strong> руководителю ООО без сотрудников и самозанятых. Для ИП эта презентация запрещена — ИП не выплачивает себе зарплату.",
+  next:[["согласие оформить","e4"],["сомнение","lib:obj"],["вопрос","lib:faq"]]},
+
+ {id:"pres_sez",x:880,y:1000,t:"say",b:["sez"],stage:"ЭТАП 3",ttl:"Презентация «Самозанятые»",lines:"150–151",
+  say:["С зарплатным проектом расчеты с самозанятыми станут проще. Мы сами проверим, активен ли их статус, автоматически сформируем чеки и, главное, переведем деньги на карты Сбера без комиссии. Хотели бы подключить? Это бесплатно."],
+  note:"Ветка выбирается, когда сотрудников нет, но есть самозанятые.",
+  next:[["согласие оформить","e4"],["сомнение","lib:obj"],["вопрос","lib:faq"]]},
+
+ {id:"pres_emp",x:1380,y:1000,t:"say",b:["emp"],stage:"ЭТАП 3",ttl:"Презентация «Есть сотрудники»",lines:"146–148",
+  say:["Зарплатный проект позволит вам делать зарплатные выплаты сотрудникам и переводы самозанятым на карты Сбера без комиссии, а также снизить ставку по кредитам для бизнеса до двух процентных пунктов. Кроме того, вы сможете получать вознаграждение за рекомендацию нашего проекта партнёрам.","Хотели бы подключить? Это бесплатно."],
+  note:"Ветка выбирается, даже если выплаты сейчас временно не идут.",
+  next:[["согласие оформить","e4"],["сомнение","lib:obj"],["вопрос","lib:faq"]]},
+
+ /* ---------- ЭТАП 4 ---------- */
+ {id:"e4",x:880,y:1128,t:"service",b:["core"],stage:"ЭТАП 4",ttl:"Переход к оформлению",lines:"158–159",
+  note:"Служебный шаг, <strong>без отдельной фразы</strong>. Презентации уже заканчиваются вопросом «Хотели бы подключить?». После явного согласия не спрашивай о готовности повторно, не повторяй презентацию и не говори заново «давайте подключим» — сразу первая фраза этапа 5.",
+  next:[["","e5_enter"]]},
+
+ /* ---------- ЭТАП 5 ---------- */
+ {id:"e5_enter",x:880,y:1236,t:"ask",b:["core"],stage:"ЭТАП 5",ttl:"Сможете зайти сейчас?",lines:"162",
+  say:["Для подключения вам нужно зайти в личный кабинет СберБизнес. Подскажите, сможете сейчас зайти?"],wait:true,
+  next:[["да / удобно","e5_channel"],["не сейчас","e6_instr"]]},
+
+ {id:"e5_channel",x:880,y:1344,t:"ask",b:["app","browser"],stage:"ЭТАП 5",ttl:"Приложение или браузер?",lines:"163–165",
+  say:["Как вам будет удобно зайти через мобильное приложение или через браузер?"],wait:true,
+  note:"В обеих ветках: <strong>не предлагай отправить СМС, когда клиент готов оформлять сейчас.</strong>",
+  next:[["мобильное приложение","a1"],["браузер / компьютер / ЛК","b1"]]},
+
+ {id:"a1",x:530,y:1470,t:"ask",b:["app"],stage:"МП 1/7",ttl:"Открыть приложение",lines:"168",
+  say:["Откройте приложение СберБизнес, как откроете, скажите?"],wait:true,next:[["","a2"]]},
+ {id:"a2",x:530,y:1570,t:"ask",b:["app"],stage:"МП 2/7",ttl:"Экран Продукты",lines:"169",
+  say:["Перейдите на экран Продукты. Перешли?"],wait:true,next:[["","a3"]]},
+ {id:"a3",x:530,y:1670,t:"ask",b:["app"],stage:"МП 3/7",ttl:"Вкладка Все продукты",lines:"170",
+  say:["Выберите вкладку Все продукты и найдите зарплатный проект. Выбрали?"],wait:true,next:[["","a4"]]},
+ {id:"a4",x:530,y:1770,t:"ask",b:["app"],stage:"МП 4/7",ttl:"Нажать Подключить",lines:"171",
+  say:["Нажмите Подключить. Получилось?"],wait:true,next:[["","a5"]]},
+ {id:"a5",x:530,y:1870,t:"ask",b:["app"],stage:"МП 5/7",ttl:"Заявление о присоединении",lines:"172",
+  say:["Далее заполните заявление о присоединении. Укажите счёт списания, контактное лицо и контактный телефон. Сообщите, как всё укажете."],wait:true,
+  note:"Это <strong>единственный</strong> перечень данных, который можно называть. «Список документов» не перечисляй и не обещай — его в промпте нет.",next:[["","a6"]]},
+ {id:"a6",x:530,y:1970,t:"say",b:["app"],stage:"МП 6/7",ttl:"Продолжить",lines:"173",
+  say:["Нажмите Продолжить."],next:[["","a7"]]},
+ {id:"a7",x:530,y:2070,t:"say",b:["app"],stage:"МП 7/7",ttl:"Подтверждение СМС-кодом",lines:"174",
+  say:["Подтвердите заявление с помощью СМС-кода. После обработки заявки зарплатный проект появится во вкладке Подключено. Чтобы создать новые выплаты или посмотреть уже существующие, нажмите «Перейти к выплатам»."],
+  next:[["","e6_done"]]},
+
+ {id:"b1",x:1215,y:1470,t:"say",b:["browser"],stage:"БР 1/7",ttl:"Войти через браузер",lines:"177",
+  say:["Тогда войдите в личный кабинет СберБизнес через браузер."],wait:true,next:[["","b2"]]},
+ {id:"b2",x:1215,y:1570,t:"say",b:["browser"],stage:"БР 2/7",ttl:"Меню → Зарплатный проект",lines:"178",
+  say:["В левом горизонтальном меню выберите «Зарплатный проект» и нажмите «Оформить заявку»."],wait:true,next:[["","b3"]]},
+ {id:"b3",x:1215,y:1670,t:"say",b:["browser"],stage:"БР 3/7",ttl:"Форма заявления",lines:"179",
+  say:["Откроется форма для заполнения заявления. В поле Счёт укажите из списка номер расчётного счёта. В поле Контактное лицо укажите фамилию, имя и отчество, а также телефон контактного лица. Добавьте контактное лицо вручную."],wait:true,
+  note:"«Фамилия, имя и отчество» — произносится словами, не по буквам.",next:[["","b4"]]},
+ {id:"b4",x:1215,y:1770,t:"say",b:["browser"],stage:"БР 4/7",ttl:"Создать и подписать",lines:"180",
+  say:["После заполнения полей нажмите Создать. Произойдёт переход к подписанию заявки. При необходимости нажмите Изменить или Удалить заявление. Для направления в банк нажмите Подписать и отправить."],wait:true,next:[["","b5"]]},
+ {id:"b5",x:1215,y:1870,t:"say",b:["browser"],stage:"БР 5/7",ttl:"Подписание: СМС или токен",lines:"181",
+  say:["Подпишите заявление в зависимости от типа защиты - СМС или токен. Сразу после подписания заявление отправится в банк. Во время обработки нажмите Проверить подпись, чтобы проверить, кем подписано заявление."],wait:true,next:[["","b6"]]},
+ {id:"b6",x:1215,y:1970,t:"say",b:["browser"],stage:"БР 6/7",ttl:"Сообщение об исполнении",lines:"182",
+  say:["После обработки заявления внизу появится сообщение об исполнении. При необходимости скачайте заявление, нажав справа на Скачать печатную форму."],wait:true,next:[["","b7"]]},
+ {id:"b7",x:1215,y:2070,t:"say",b:["browser"],stage:"БР 7/7",ttl:"Выпуск карт",lines:"183",
+  say:["После регистрации договора можете выпустить карты и делать выплаты."],next:[["","e6_done"]]},
+
+ /* ---------- ЭТАП 6 ---------- */
+ {id:"e6_done",x:880,y:2192,t:"end",b:["core"],stage:"ЭТАП 6",ttl:"После оформления",lines:"186–188",
+  say:["В течение недели с номера 0321 с вами свяжется менеджер, расскажет, как им пользоваться, и при необходимости ответит на вопросы.","Ещё вы всегда можете обратиться в чат СберБизнес или на номер 0321, если вопросы возникнут раньше. Всего доброго, до свидания!"],
+  note:"Прощание <strong>обязательно во всех сценариях</strong>, не только при отказе. Перед вызовом dialog_end сначала произнеси финальную реплику с явным прощанием."},
+
+ {id:"e6_instr",x:1545,y:1236,t:"ask",b:["refuse"],stage:"ЭТАП 6",ttl:"СМС с ИНСТРУКЦИЕЙ",lines:"189–190",
+  say:["Могу отправить вам СМС со ссылкой на инструкцию по подключению сервиса после нашего разговора. Если появятся вопросы – звоните 0321, добавочный один, вам обязательно помогут. Подскажите, удобно ли так будет?"],wait:true,
+  note:"Когда клиенту неудобно оформить на звонке или он хочет оформить самостоятельно.",
+  next:[["согласие","e6_agree"],["отказ","e6_bye"]]},
+
+ {id:"e6_desc",x:40,y:1102,t:"ask",b:["leader","refuse"],stage:"ЭТАП 6",ttl:"СМС с ОПИСАНИЕМ",lines:"191–192",
+  say:["Могу отправить вам СМС со ссылкой на описание зарплатного проекта после нашего разговора. Если появятся вопросы – звоните 0321, добавочный один, вам обязательно помогут. Подскажите, удобно ли так будет?"],wait:true,
+  note:"Когда клиент просит прислать описание: «надо подумать — пришлите описание», «отправьте предложение письмом», «давно прошу прислать информацию».",
+  see:[["согласие","e6_agree"],["отказ","e6_bye"]]},
+
+ {id:"e6_agree",x:1430,y:1372,t:"end",b:["refuse"],stage:"ЭТАП 6",ttl:"Согласие на СМС",lines:"193–194",
+  say:["Хорошо, отправлю после нашего разговора. Всего доброго, до свидания!","Хорошо, отправлю вам СМС после нашего разговора. Если появятся вопросы – звоните 0321, добавочный один. Всего доброго, до свидания!"],
+  note:"Вторая формулировка — когда клиент <strong>САМ</strong> попросил прислать инструкцию или описание: согласие не переспрашивай. <strong>Правила СМС:</strong> это единственные допустимые упоминания СМС; отправка только на номер звонка и только после просьбы или согласия; говори в будущем времени («отправлю после разговора»), не говори «СМС отправлена»."},
+
+ {id:"e6_bye",x:1720,y:1372,t:"end",b:["refuse"],stage:"ЭТАП 6",ttl:"Отказ от СМС — прощание",lines:"194, 34",
+  note:"Если клиент отказался от СМС — вежливо попрощайся без отправки. Перед dialog_end <strong>ОБЯЗАТЕЛЬНО</strong> сначала сформируй финальную реплику с явным прощанием («До свидания!»). Слова клиента «спасибо» или «до свидания» не заменяют прощание с твоей стороны."}
+];
+
+/* ---- сквозные библиотеки ---- */
+var LIBS=[
+ {key:"stop",name:"Нестандартные ситуации и стоп-условия",src:"Протокол 1.4",items:[
+  {n:"1",ttl:"Просит оператора или менеджера",lines:"54",
+   say:["У меня, к сожалению, нет возможности переключить на менеджера. По вашему вопросу помогут на линии 0321, добавочный один. Всего доброго, до свидания!"],
+   note:"Не удерживай в продажном сценарии и не жди повторной просьбы. После этого к продаже не возвращайся. <strong>Правило приоритетно</strong> — применяй даже если клиент в той же реплике спрашивает, робот ли ты."},
+  {n:"2",ttl:"Спрашивает, робот ли это",lines:"56, 199",
+   say:["Да, я виртуальный помощник. Позвольте рассказать вам про зарплатный проект от Сбера?"],
+   note:"Но если вместе с этим просит оператора — приоритетнее п. 1: сразу маршрутизируй на 0321 и не переходи к рассказу о продукте."},
+  {n:"3",ttl:"Вопрос по нашему продукту без ответа",lines:"58, 61",
+   say:["К сожалению, сейчас не могу ответить на ваш вопрос. Вам помогут на линии 0321, добавочный один."],
+   note:"После ответа <strong>вернись к текущему шагу сценария</strong>; если клиент завершает разговор — попрощайся (этап 6)."},
+  {n:"4",ttl:"Вопрос по другому банковскому продукту",lines:"60, 61",
+   say:["К сожалению, сейчас не могу ответить на ваш вопрос. Вам помогут на линии 0321, добавочный один или по номеру 900, если вас интересуют продукты для физических лиц."],
+   note:"Консультации по другим продуктам не проводи. По зарплатному проекту отвечай сама по разделам 3.3–3.4."},
+  {n:"5",ttl:"Просит перезвонить позже",lines:"63",
+   say:["Хорошо, мы вам перезвоним. До свидания."],
+   note:"<strong>Не называй и не фиксируй дату и время</strong>, даже если клиент их назвал. Если неудобно именно оформлять, а разговор продолжается — не назначай перезвон, иди в этап 6."},
+  {n:"6",ttl:"Молчит 3 раза подряд",lines:"65",
+   say:["К сожалению, вас не слышно. Перезвоним вам позже. До свидания!"],note:"И заверши диалог."},
+  {n:"7",ttl:"Фразы автоответчика или робота",lines:"67–89",
+   say:["Мы вам перезвоним. До свидания."],
+   note:"Маркеры: «вы не набрали ни одной цифры», «в тоновом режиме», «оставьте сообщение после сигнала», «абонент не отвечает или временно недоступен», «дождитесь ответа оператора», «все разговоры записываются», «оставайтесь на линии», «наберите один», «передам абоненту», «я виртуальный помощник», «мтс защитник» и др. — всего 19 фраз."},
+  {n:"8",ttl:"Явный отказ",lines:"90",
+   say:["Уточню — что именно не подходит?"],
+   note:"Не отрабатывай как возражение и не предлагай СМС. <strong>«Нет» считай отказом только</strong> в ответ на прямое предложение продукта или оформления. «Нет» на вопрос о ситуации, роли, канале или шаге («есть сотрудники?», «вы руководитель?», «получилось?») — это ответ по существу, а не отказ. ОБЯЗАТЕЛЬНО один раз мягко спроси причину. Назвал причину в той же реплике — не переспрашивай. Готового ответа в 3.5 нет — не придумывай аргументы, поблагодари и попрощайся."},
+  {n:"9",ttl:"Продукт заведомо не подходит",lines:"92, 201–207",
+   note:"Неактуален, если: клиент — ИП без сотрудников и без выплат самозанятым (сначала уточни про самозанятых); ИЛИ деятельность фактически не ведётся — приостановлена, закрывается, закрыта, лицензия сдана (для любой формы). Не продавай и не дави."}
+ ]},
+
+ {key:"obj",name:"Работа с возражениями",src:"Раздел 3.5",items:[
+  {n:"",ttl:"Правило раздела",lines:"259, 33",
+   note:"Реагируй на смысл возражения; условие («Если клиент …») <strong>вслух не произноси</strong> — только ответ в кавычках. Не спорь: присоединись, приведи аргумент, и только при готовности предложи следующий шаг. <strong>Если клиент возражает третий раз — вежливо попрощайся.</strong>"},
+  {n:"1",ttl:"«Я подумаю» / «Я посоветуюсь»",lines:"261–263",
+   say:["Хорошо. Возможно, у вас остались вопросы по продукту?"],
+   note:"Если вопросов нет — не предлагай оформление повторно: поблагодари и вежливо попрощайся. СМС предложи, только если клиент сам попросит."},
+  {n:"2",ttl:"«Мало сотрудников»",lines:"265–266",
+   say:["Понимаю. Зарплатный проект будет полезен вам и при небольшом штате: подключение бесплатное, а зарплатные выплаты на карты Сбера осуществляются без комиссии. Расскажу, как подключить?"]},
+  {n:"3",ttl:"«Нет сотрудников»",lines:"268–269",
+   note:"Это <strong>не возражение</strong>, а уточнение ситуации — действуй по развилке этапа 2: уточни про самозанятых; есть — презентация «Самозанятые»; нет — для ИП заверши фразой 3.2, для ООО уточни роль руководителя."},
+  {n:"4",ttl:"«Списание по исполнительным документам»",lines:"271–272",
+   say:["Понимаю, всегда неприятно, когда списание денег происходит в принудительном порядке. При этом в данном случае любой банк действует по распоряжению государства."]},
+  {n:"5",ttl:"«Сотрудники пенсионеры»",lines:"274–276",
+   say:["В этом случае выпуск зарплатных карт не обязателен, вы можете включить в зарплатный реестр действующие пенсионные карты сотрудников и переводить на них заработную плату. При этом переводить их в статус «зарплатные» не потребуется.","Вам подходит такой вариант?"]},
+  {n:"6",ttl:"«Буду переводить с р/с» / «платёжным поручением»",lines:"278–279",
+   say:["Зарплатные выплаты на карты Сбера осуществляются без комиссии и не расходуют лимит на обычные переводы физическим лицам. Если есть возможность сэкономить, то почему бы её не использовать? Подключение займёт несколько минут. Что скажете?"]},
+  {n:"7",ttl:"«Проект в другом банке» / «там кэшбэк»",lines:"281–282",
+   say:["С нашим проектом вы получите бонус - участие в реферальной программе, а это уже дополнительный доход. Рассказать подробнее про реферальную программу?"],
+   note:"Один ответ на оба случая: и «зарплатный проект уже в другом банке», и «там дают кэшбэк за перечисления»."},
+  {n:"8",ttl:"«Плачу наличными»",lines:"284–285",
+   say:["Понимаю, для вас это удобно. При этом с зарплатным проектом вы исключаете риски, связанные с хранением и пересчётом наличных, экономите время вашего бухгалтера. Сотрудники получат деньги мгновенно, а также бонусы: сниженную ставку по ипотеке и кредитам, а ещё скидки от партнёров Сбера. Хотите, расскажу, как подключить?"]},
+  {n:"9",ttl:"«Сотрудники против»",lines:"287–288",
+   say:["Мы предлагаем не переход, а дополнительные возможности - повышенные ставки по вкладам и накопительному счёту, налоговый возврат без сбора пакета документов, деньги до зарплаты. Предлагаю выпустить им карты и предоставить каждому сотруднику возможность лично оценить все преимущества. Что думаете?"]},
+  {n:"10",ttl:"«Оформлю, если банк одобрит кредит»",lines:"290–291",
+   say:["Решение по зарплатному проекту вы принимаете на основании удобства для вас и ваших сотрудников. Решение по кредиту – это процесс, который зависит от ряда факторов: платежного баланса, кредитной истории и скоринговых правил банка. Это два независимых процесса, предлагаю их также рассматривать независимо. Что скажете?"]},
+  {n:"11",ttl:"«Работаю один, себе зарплату не выплачиваю»",lines:"293–296",
+   note:"<strong>СНАЧАЛА определи форму бизнеса.</strong> ООО — презентация «Руководителю» (лишний вопрос о роли не задавай); закрывать разговор как «неактуальный» для работающего ООО нельзя. ИП — уточни про самозанятых; если нет — вежливо заверши (3.2). Презентация «Руководителю» для ИП <strong>запрещена</strong>."},
+  {n:"12",ttl:"Сотрудники не оформлены официально",lines:"298–302",
+   say:["Такой подход действительно экономит немного средств, при этом на дистанции несёт больше негатива для бизнеса: сотрудники предпочитают официальные компании, а на поиск и обучение новичков уходит дополнительное время; налоговая доначислит НДФЛ, пени и штраф если выявит факт трудоустройства. Чтобы избежать этих рисков рекомендуем перевести сотрудников на зарплатный проект."]}
+ ]},
+
+ {key:"faq",name:"Ответы на частые вопросы",src:"Раздел 3.4",items:[
+  {n:"",ttl:"Правило раздела",lines:"229",
+   note:"После ответа на любой из этих вопросов <strong>не замолкай</strong> и не спрашивай сам «Остались ли вопросы?» — вернись к текущему шагу сценария и предложи следующий шаг."},
+  {n:"1",ttl:"«Какая комиссия по зарплатному проекту?»",lines:"231–232",
+   say:["При заключении нового договора зарплатные выплаты и переводы самозанятым на карты Сбера комиссия ноль процентов — независимо от суммы перечислений. За зачисление прочих выплат на счета физлиц, открытые в Сбере — комиссия два с половиной процента от суммы; в другие банки — три с половиной процента."],
+   note:"Проценты проговариваются словами — для корректного произношения голосом."},
+  {n:"2",ttl:"«Можно ли переводить на карты других банков?»",lines:"234–235",
+   say:["Да, можно. В таком случае комиссия за перевод физическому лицу будет зависеть от условий вашего тарифа расчетно-кассового обслуживания."],
+   note:"Дальше клиент обычно спрашивает про свой тариф — следующие два ответа."},
+  {n:"3",ttl:"«Какой у меня тариф?»",lines:"236–237",
+   say:["Информацию по вашему тарифу можно посмотреть в личном кабинете СберБизнес, либо уточнить по номеру 0321."]},
+  {n:"4",ttl:"«Как посмотреть тариф?»",lines:"238–240",
+   say:["В мобильном приложении на главной странице нажмите на значок профиля в левом верхнем углу. Перейдите в раздел Тарифы. На вкладке Счета отображается название пакета услуг, стоимость и к какому счёту он подключён.","В браузере в интернет-банке СберБизнес слева в меню выберите раздел Мой тариф и перейдите на вкладку Подписка. На открывшейся странице выберите счёт, по которому нужно посмотреть, какой пакет услуг подключён. На вкладке Подписка отображается название пакета услуг и его стоимость."]},
+  {n:"5",ttl:"«Может ли ИП выплачивать себе зарплату?»",lines:"242–244",
+   say:["Нет, так как в отношении себя предприниматель не является работником (согласно статье 20 Трудового Кодекса России).","А заработная плата выплачивается только работникам (согласно статье 129 Трудового Кодекса России)."]},
+  {n:"6",ttl:"«Можно ли без расчётного счёта в Сбере?»",lines:"246–247",
+   say:["Если пользоваться зарплатным проектом без расчётного счёта в Сбере, то для направления зарплатных реестров дистанционно, надо подключить интернет-банк СберБизнес. Подключение и ежемесячное обслуживание бесплатное (даже без расчётно-кассового обслуживания)."]},
+  {n:"7",ttl:"«Можно привязать имеющуюся карту Сбера?»",lines:"249–250",
+   say:["Да, если карта у вас уже есть, её можно присоединить."]},
+  {n:"8",ttl:"«Условия обслуживания карт?»",lines:"252–253",
+   say:["Выпуск бесплатный. Классическая карта обслуживается бесплатно, золотая – со скидкой 50%. А ещё можно оформить СберКарту. Её обслуживание также будет бесплатным при регулярных выплатах зарплаты на карту (хотя бы один раз в три месяца)."]},
+  {n:"9",ttl:"«Какие скидки у партнёров банка?»",lines:"255–256",
+   say:["С актуальными предложениями для физлиц можно ознакомиться в приложении СберБанк Онлайн, на линии 900 или на сайте банка."]}
+ ]},
+
+ {key:"fact",name:"Справочник фактов о продукте",src:"Раздел 3.3",items:[
+  {n:"",ttl:"14 фактов для ответов и аргументации",lines:"211–226",
+   list:["Зарплатные выплаты сотрудникам и переводы самозанятым на карты Сбера — без комиссии, даже в выходные.",
+     "Перечисление зарплаты на карты физлиц других банков тарифицируется по условиям расчётно-кассового обслуживания.",
+     "Статус самозанятого проверяется автоматически. Если самозанятый зарегистрирован в сервисе «Своё дело», чеки для бухгалтерии формируются автоматически.",
+     "Сниженная ставка по бизнес-кредитам до двух процентных пунктов — на ноль целых одну десятую пункта за каждые 50 тыс. руб. зачислений. Для кредита до 5 млн руб.",
+     "Реферальная программа: вы получите 4 тыс. руб., партнёр — 3 тыс. руб. Условие — зачисление не менее 2500 руб. на получателя в первые 30 дней. Или подписка СберБизнес Прайм за 1 руб. на 3 месяца. Приглашений не ограничено.",
+     "Бесплатная Сберкарта для сотрудников при регулярных зачислениях. Можно использовать действующую карту Сбера.",
+     "4 категории кэшбэка бонусами «СберСпасибо» каждый месяц, до 1% на все покупки, максимум до 5 тыс. в месяц.",
+     "Бесплатные СМС и Push-уведомления.",
+     "«Деньги до зарплаты» — занять до половины зарплаты на месяц, решение за несколько минут.",
+     "Сниженные ставки по кредиту и ипотеке: минус один процент на ипотеку, минус два процента на потребительский кредит.",
+     "Повышенные ставки по вкладам и накопительному счёту — плюс ноль целых пять десятых процента.",
+     "Налоговый возврат без сбора пакета документов за покупки у партнёров в образовании, медицине и спорте.",
+     "Сотрудники по QR-коду сами выпускают карты или привязывают действующие в СберБанк Онлайн.",
+     "Оформление в офисе банка возможно — по записи и документам подскажут на 0321, добавочный один (стр. 209)."]}
+ ]},
+
+ {key:"lim",name:"Ограничения — проверка перед ответом",src:"Блок 4",items:[
+  {n:"1",ttl:"Только факты из промпта",lines:"308",
+   note:"Опирайся <strong>ТОЛЬКО</strong> на сведения о продукте, явно перечисленные в промпте. НЕ добавляй фактов «из общих знаний» — даже если они кажутся верными."},
+  {n:"2",ttl:"Не обещай несуществующих действий",lines:"310",
+   note:"Нельзя обещать: СМС с коммерческим предложением, выслать документы, передать заявку менеджеру, перезвонить в конкретное время, открыть счёт, инструкцию по другому продукту. Можно только: СМС со ссылкой на инструкцию или описание (этап 6) и перезвон без указания времени. <strong>«Список документов» не перечисляй</strong> — его в промпте нет; настойчиво спрашивают — на 0321."},
+  {n:"3",ttl:"Без собственного мнения",lines:"312",
+   note:"Никаких оценок, прогнозов и рекомендаций вне промпта: дивиденды, инвестиции, юридические и налоговые консультации сверх явно перечисленного, ставки других банков."},
+  {n:"",ttl:"Если хоть по одному пункту «нет»",lines:"314–315",
+   say:["К сожалению, сейчас не могу ответить на ваш вопрос. Вам помогут на линии 0321, добавочный один или по номеру 900, если вас интересуют продукты для физических лиц."],
+   note:"НЕ отвечай по существу — скажи ровно эту фразу."},
+  {n:"4",ttl:"Фраза для ИП — только для ИП",lines:"317",
+   note:"Фраза «Зарплатный проект доступен вам бесплатно — когда ситуация в бизнесе изменится…» разрешена <strong>ТОЛЬКО</strong> для ИП без сотрудников и самозанятых."}
+ ]},
+
+ {key:"tov",name:"Tone of voice",src:"Блок 5",items:[
+  {n:"",ttl:"Персонаж",lines:"321–322",
+   note:"Анна, женский пол, виртуальный помощник, разработан Сбером. Обращение — <strong>ВСЕГДА строго на «вы»</strong>. Характер: вежливый, настойчивый, доброжелательный, эмпатичный. Речь средней скорости с паузами. Говорит <strong>ТОЛЬКО по-русски</strong>."},
+  {n:"",ttl:"Правила речи",lines:"324–334",
+   list:["Естественно, дружелюбно, человечно, ненавязчиво; простые лаконичные фразы (это голос).",
+     "Не упоминай свою виртуальную природу — кроме прямого вопроса «вы робот?».",
+     "Избегай «должны/обязаны» и агрессивных призывов; фокус на выгоде для бизнеса, а не на фичах.",
+     "Избегай «но», «зато», «однако» — используй «и», «при этом», «с другой стороны».",
+     "Без рекламных клише вроде «Ваш успех — наша забота».",
+     "Избегай наречий «всего», «лишь», «катастрофически», «сильно», «очень», «значительно».",
+     "Вместо «Молодец» — «Отлично», «Прекрасно».",
+     "Не злоупотребляй «Поняла вас» / «Понимаю вас» — не в двух репликах подряд; чередуй с «Хорошо, что вы об этом сказали», «Да, это привычная ситуация», «Согласна, это важно».",
+     "Сохраняй профессиональный тон даже при жаргоне или агрессии клиента; не подражай манере речи.",
+     "Говори о себе в женском роде."]}
+ ]}
+];
+
+var BRANCHES=[
+ {k:"emp",n:"Есть сотрудники"},{k:"sez",n:"Самозанятые"},{k:"leader",n:"Руководитель ООО"},
+ {k:"ip",n:"ИП — неактуально"},{k:"inactive",n:"Не ведёт деятельность"},
+ {k:"app",n:"Оформление: приложение"},{k:"browser",n:"Оформление: браузер"},
+ {k:"refuse",n:"Отказ / перенос / СМС"}
+];
+
+/* ============ построение схемы ============ */
+var NMAP={};NODES.forEach(function(n){NMAP[n.id]=n;});
+var gnode=document.getElementById("gnode"),gedge=document.getElementById("gedge"),
+    gswim=document.getElementById("gswim"),glabel=document.getElementById("glabel");
+var SVGNS="http://www.w3.org/2000/svg";
+function el(t,a){var e=document.createElementNS(SVGNS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+
+/* дорожки этапов */
+var SWIM=[{y:24,l:"ВХОД"},{y:112,l:"ЭТАП 1 · ПРИВЕТСТВИЕ"},{y:432,l:"ЭТАП 2 · ВОВЛЕЧЕНИЕ"},{y:980,l:"ЭТАП 3 · ПРЕЗЕНТАЦИЯ"},{y:1108,l:"ЭТАП 4 · ПЕРЕХОД"},{y:1216,l:"ЭТАП 5 · ОФОРМЛЕНИЕ"},{y:2172,l:"ЭТАП 6 · ЗАВЕРШЕНИЕ"}];
+SWIM.forEach(function(s){
+  gswim.appendChild(el("line",{x1:-40,y1:s.y-14,x2:1820,y2:s.y-14,"class":"swimline"}));
+  var t=el("text",{x:-34,y:s.y-20,"class":"swim"});t.textContent=s.l;gswim.appendChild(t);
+});
+
+/* перенос текста */
+function wrap(str,max){
+  var w=str.split(" "),out=[],cur="";
+  for(var i=0;i<w.length;i++){
+    var tst=cur?cur+" "+w[i]:w[i];
+    if(tst.length>max&&cur){out.push(cur);cur=w[i];}else cur=tst;
+  }
+  if(cur)out.push(cur);return out;
+}
+
+/* высоты карточек считаем ЗАРАНЕЕ: рёбра должны выходить из реального низа узла,
+   иначе стрелка стартует внутри высокой карточки */
+NODES.forEach(function(n){
+  n._lines=wrap(n.ttl,26);
+  n._quote=n.say?wrap(n.say[0],34).slice(0,2):[];
+  n._h=Math.max(H,26+n._lines.length*16+(n._quote.length?n._quote.length*15+4:0));
+});
+
+/* рёбра */
+function anchor(n){return{cx:n.x+W/2,top:n.y,bot:n.y+n._h,mid:n.y+n._h/2,l:n.x,r:n.x+W};}
+var LABELS=[];
+NODES.forEach(function(n){
+  if(!n.next)return;
+  n.next.forEach(function(pair){
+    var cond=pair[0],to=pair[1];
+    if(to.indexOf("lib:")===0)return;
+    var m=NMAP[to];if(!m)return;
+    var A=anchor(n),B=anchor(m),d;
+    if(Math.abs(A.cx-B.cx)<6&&B.top>=A.bot-2){
+      d="M"+A.cx+","+A.bot+" L"+B.cx+","+B.top;
+    }else if(B.top>=A.bot-2){
+      var midY=(A.bot+B.top)/2;
+      d="M"+A.cx+","+A.bot+" C"+A.cx+","+midY+" "+B.cx+","+midY+" "+B.cx+","+B.top;
+    }else{
+      var sx=A.cx>B.cx?A.l:A.r, ex=A.cx>B.cx?B.r:B.l, off=A.cx>B.cx?-52:52;
+      d="M"+sx+","+A.mid+" C"+(sx+off)+","+A.mid+" "+(ex-off)+","+B.mid+" "+ex+","+B.mid;
+    }
+    var p=el("path",{d:d,"class":"edge","marker-end":"url(#arw)"});
+    p.dataset.from=n.id;p.dataset.to=to;gedge.appendChild(p);
+    if(cond)LABELS.push({path:p,cond:cond,from:n.id,to:to});
+  });
+});
+
+/* узлы */
+NODES.forEach(function(n){
+  var g=el("g",{"class":"node",transform:"translate("+n.x+","+n.y+")",tabindex:"0",role:"button"});
+  g.dataset.t=n.t;g.dataset.id=n.id;
+  g.setAttribute("aria-label",n.ttl);
+  g.appendChild(el("rect",{"class":"box",x:0,y:0,width:W,height:n._h,rx:10}));
+  g.appendChild(el("rect",{"class":"edgebar",x:0,y:0,width:4,height:n._h,rx:2,
+    fill:n.t==="ask"?"var(--ask)":n.t==="end"?"var(--stop)":n.t==="service"?"var(--svc)":"var(--say)"}));
+  var st=el("text",{x:14,y:17,"class":"stg"});st.textContent=n.stage;g.appendChild(st);
+  n._lines.forEach(function(L,i){
+    var t=el("text",{x:14,y:36+i*16,"class":"ttl"});t.textContent=L;g.appendChild(t);
+  });
+  n._quote.forEach(function(L,i){
+    var t=el("text",{x:14,y:36+n._lines.length*16+6+i*15,"class":"qt"});
+    t.textContent=(i===1&&n.say[0].length>68?L+"…":L);g.appendChild(t);
+  });
+  gnode.appendChild(g);
+});
+
+/* подписи на рёбрах — ставим последними, измеряя реальную ширину текста
+   и обходя уже занятые места (карточки и ранее поставленные подписи) */
+(function(){
+  var busy=NODES.map(function(n){return{x:n.x-7,y:n.y-7,w:W+14,h:n._h+14};});
+  function free(r){
+    for(var i=0;i<busy.length;i++){var o=busy[i];
+      if(r.x<o.x+o.w&&r.x+r.w>o.x&&r.y<o.y+o.h&&r.y+r.h>o.y)return false;}
+    return true;
+  }
+  var TS=[.5,.4,.6,.3,.7,.22,.78],DY=[0,-16,16,-31,31,-46,46],TH=16;
+  LABELS.forEach(function(L){
+    var tx=el("text",{"text-anchor":"middle","class":"elabel"});
+    tx.textContent=L.cond;glabel.appendChild(tx);
+    var tw=tx.getComputedTextLength()+12;
+    var len=L.path.getTotalLength(),spot=null;
+    for(var i=0;i<TS.length&&!spot;i++){
+      var pt=L.path.getPointAtLength(len*TS[i]);
+      for(var j=0;j<DY.length;j++){
+        var r={x:pt.x-tw/2,y:pt.y+DY[j]-TH/2,w:tw,h:TH};
+        if(free(r)){spot=r;break;}
+      }
+    }
+    if(!spot){var q=L.path.getPointAtLength(len*.5);spot={x:q.x-tw/2,y:q.y-TH/2,w:tw,h:TH};}
+    busy.push(spot);
+    var bg=el("rect",{x:spot.x,y:spot.y,width:tw,height:TH,rx:4,"class":"elabel-bg"});
+    bg.dataset.from=L.from;bg.dataset.to=L.to;glabel.insertBefore(bg,tx);
+    tx.setAttribute("x",spot.x+tw/2);tx.setAttribute("y",spot.y+TH-4.5);
+    tx.dataset.from=L.from;tx.dataset.to=L.to;
+  });
+})();
+
+/* ============ камера ============ */
+var svg=document.getElementById("svg"),cam=document.getElementById("cam"),stage=document.getElementById("stage");
+var view={x:0,y:0,k:1};
+function apply(){cam.setAttribute("transform","translate("+view.x+","+view.y+") scale("+view.k+")");}
+var BW=2060,BH=2320,SPINE=880;
+function fitAll(){
+  /* обзор: вся карта целиком (текст мелкий — это осознанно, для общего вида) */
+  var r=stage.getBoundingClientRect(),pad=20;
+  var k=Math.min((r.width-pad*2)/BW,(r.height-pad*2)/BH);
+  view.k=Math.max(.14,Math.min(1.4,k));
+  view.x=(r.width-BW*view.k)/2+70*view.k;view.y=pad;
+  apply();
+}
+function startView(){
+  /* старт: читаемый масштаб, хребет сценария по центру, верх карты */
+  var r=stage.getBoundingClientRect();
+  view.k=Math.max(.72,Math.min(1.05,r.width/900));
+  view.x=r.width/2-SPINE*view.k;view.y=24;
+  apply();
+}
+function zoomAt(f,cx,cy){
+  var k2=Math.max(.16,Math.min(2.4,view.k*f));
+  var r=stage.getBoundingClientRect();
+  var px=(cx-r.left-view.x)/view.k, py=(cy-r.top-view.y)/view.k;
+  view.x-=px*(k2-view.k);view.y-=py*(k2-view.k);view.k=k2;apply();
+}
+stage.addEventListener("wheel",function(e){e.preventDefault();zoomAt(e.deltaY<0?1.11:.9,e.clientX,e.clientY);},{passive:false});
+var drag=null;
+stage.addEventListener("pointerdown",function(e){
+  if(e.target.closest(".node"))return;
+  drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};
+  stage.classList.add("drag");stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener("pointermove",function(e){
+  if(!drag)return;view.x=drag.vx+(e.clientX-drag.x);view.y=drag.vy+(e.clientY-drag.y);apply();
+});
+["pointerup","pointercancel"].forEach(function(ev){
+  stage.addEventListener(ev,function(){drag=null;stage.classList.remove("drag");});
+});
+document.getElementById("zin").onclick=function(){var r=stage.getBoundingClientRect();zoomAt(1.22,r.left+r.width/2,r.top+r.height/2);};
+document.getElementById("zout").onclick=function(){var r=stage.getBoundingClientRect();zoomAt(.82,r.left+r.width/2,r.top+r.height/2);};
+document.getElementById("zfit").onclick=fitAll;
+document.getElementById("zstart").onclick=startView;
+
+/* ============ панель ============ */
+var detail=document.getElementById("detail");
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function sayBlock(arr){
+  if(!arr||!arr.length)return"";
+  return '<div class="saybox"><span class="lbl">Произносится вслух</span>'+
+    arr.map(function(s){return"<p>«"+esc(s)+"»</p>";}).join("")+"</div>";
+}
+function render(h){detail.innerHTML='<div class="dwrap">'+h+"</div>";detail.scrollTop=0;}
+
+var TYPE={say:"реплика",ask:"вопрос · ждать ответа",service:"служебное · вслух не произносить",
+  end:"завершение диалога",start:"вход"};
+
+function showNode(id){
+  var n=NMAP[id];if(!n)return;
+  selectNode(id);
+  var h='<div class="badges"><span class="badge '+n.t+'">'+TYPE[n.t]+'</span>'+
+    '<span class="badge">'+esc(n.stage)+"</span></div>";
+  h+="<h3>"+esc(n.ttl)+"</h3>";
+  h+='<div class="dsrc">Промпт 24.07.26 · строки '+esc(n.lines)+"</div>";
+  if(n.wait)h+='<div class="wait">⏸ ЖДИ ОТВЕТА клиента</div>';
+  h+=sayBlock(n.say);
+  if(n.note)h+='<p class="note">'+n.note+"</p>";
+  var outs=(n.next||[]).concat(n.see||[]);
+  if(outs.length){
+    h+='<div class="nexts"><span class="lbl">Куда дальше</span><ul>';
+    outs.forEach(function(p){
+      var c=p[0],to=p[1];
+      if(to.indexOf("lib:")===0){
+        var lk=to.slice(4),lib=LIBS.filter(function(L){return L.key===lk;})[0];
+        h+='<li><button data-lib="'+lk+'"><span class="cond">'+esc(c||"→")+"</span><span>"+esc(lib?lib.name:lk)+"</span></button></li>";
+      }else{
+        var m=NMAP[to];if(!m)return;
+        h+='<li><button data-go="'+to+'"><span class="cond">'+esc(c||"→")+"</span><span>"+esc(m.ttl)+"</span></button></li>";
+      }
+    });
+    h+="</ul></div>";
+  }
+  render(h);
+}
+
+function showLibItem(key,idx){
+  var lib=LIBS.filter(function(L){return L.key===key;})[0];if(!lib)return;
+  var it=lib.items[idx];if(!it)return;
+  clearNodeSel();
+  document.querySelectorAll(".lib li button").forEach(function(b){b.classList.remove("sel");});
+  var b=document.querySelector('.lib li button[data-k="'+key+'"][data-i="'+idx+'"]');
+  if(b){b.classList.add("sel");var d=b.closest("details");if(d)d.open=true;}
+  var h='<div class="badges"><span class="badge">'+esc(lib.src)+'</span><span class="badge">срабатывает в любой точке</span></div>';
+  h+="<h3>"+(it.n?esc(it.n)+". ":"")+esc(it.ttl)+"</h3>";
+  h+='<div class="dsrc">Промпт 24.07.26 · строки '+esc(it.lines)+"</div>";
+  h+=sayBlock(it.say);
+  if(it.note)h+='<p class="note">'+it.note+"</p>";
+  if(it.list)h+='<ul class="dlist">'+it.list.map(function(x){return"<li>"+esc(x)+"</li>";}).join("")+"</ul>";
+  render(h);
+}
+
+detail.addEventListener("click",function(e){
+  var g=e.target.closest("button[data-go]");if(g){showNode(g.dataset.go);return;}
+  var l=e.target.closest("button[data-lib]");
+  if(l){var lib=LIBS.filter(function(L){return L.key===l.dataset.lib;})[0];
+    if(lib){var d=document.querySelector('details[data-k="'+lib.key+'"]');if(d){d.open=true;d.scrollIntoView({block:"nearest"});}
+      showLibItem(lib.key,0);}}
+});
+
+/* выбор узла */
+function clearNodeSel(){document.querySelectorAll(".node.sel").forEach(function(x){x.classList.remove("sel");});}
+function selectNode(id){
+  clearNodeSel();
+  document.querySelectorAll(".lib li button").forEach(function(b){b.classList.remove("sel");});
+  var g=document.querySelector('.node[data-id="'+id+'"]');
+  if(g)g.classList.add("sel");
+}
+gnode.addEventListener("click",function(e){
+  var g=e.target.closest(".node");if(g)showNode(g.dataset.id);
+});
+gnode.addEventListener("keydown",function(e){
+  if(e.key!=="Enter"&&e.key!==" ")return;
+  var g=e.target.closest(".node");if(g){e.preventDefault();showNode(g.dataset.id);}
+});
+
+/* ============ библиотеки в рейле ============ */
+var libsBox=document.getElementById("libs");
+LIBS.forEach(function(L){
+  var d=document.createElement("details");d.className="lib";d.dataset.k=L.key;
+  var s=document.createElement("summary");
+  var numbered=L.items.filter(function(i){return i.n;}).length;
+  var listed=L.items.reduce(function(a,i){return a+(i.list?i.list.length:0);},0);
+  var cnt=numbered||listed||L.items.length;
+  s.innerHTML="<span>"+esc(L.name)+'</span><span class="n">'+cnt+"</span>";
+  d.appendChild(s);
+  var ul=document.createElement("ul");
+  L.items.forEach(function(it,i){
+    var li=document.createElement("li"),b=document.createElement("button");
+    b.dataset.k=L.key;b.dataset.i=i;
+    b.innerHTML='<span class="ln">'+(it.n?esc(it.n):"§")+"</span>"+esc(it.ttl);
+    b.onclick=function(){showLibItem(L.key,i);};
+    li.appendChild(b);ul.appendChild(li);
+  });
+  d.appendChild(ul);libsBox.appendChild(d);
+});
+
+/* ============ фильтры ============ */
+var active={};BRANCHES.forEach(function(b){active[b.k]=true;});
+var fbox=document.getElementById("filters");
+BRANCHES.forEach(function(b){
+  var c=document.createElement("button");c.className="chip on";c.textContent=b.n;c.dataset.k=b.k;
+  c.onclick=function(){active[b.k]=!active[b.k];c.classList.toggle("on",active[b.k]);applyFilter();};
+  fbox.appendChild(c);
+});
+var allc=document.createElement("button");allc.className="chip";allc.textContent="Только хребет";
+allc.onclick=function(){
+  var anyOn=BRANCHES.some(function(b){return active[b.k];});
+  BRANCHES.forEach(function(b){active[b.k]=!anyOn;});
+  fbox.querySelectorAll(".chip[data-k]").forEach(function(x){x.classList.toggle("on",active[x.dataset.k]);});
+  applyFilter();
+};
+fbox.appendChild(allc);
+
+function visible(n){
+  if(n.b.indexOf("core")>-1)return true;
+  return n.b.some(function(k){return active[k];});
+}
+function applyFilter(){
+  NODES.forEach(function(n){
+    var g=document.querySelector('.node[data-id="'+n.id+'"]');
+    if(g)g.classList.toggle("dim",!visible(n));
+  });
+  document.querySelectorAll("#gedge [data-from],#glabel [data-from]").forEach(function(p){
+    var a=NMAP[p.dataset.from],b=NMAP[p.dataset.to];
+    var off=!(a&&b&&visible(a)&&visible(b));
+    p.classList.toggle("dim",off);
+  });
+}
+
+/* ============ поиск ============ */
+var q=document.getElementById("q");
+function hay(n){
+  return [n.ttl,n.stage,n.note||"",(n.say||[]).join(" ")].join(" ").toLowerCase();
+}
+q.addEventListener("input",function(){
+  var v=q.value.trim().toLowerCase();
+  document.querySelectorAll(".node").forEach(function(g){g.classList.remove("hit");});
+  document.querySelectorAll(".lib li button").forEach(function(b){b.style.display="";});
+  if(!v){applyFilter();return;}
+  var found=0;
+  NODES.forEach(function(n){
+    var g=document.querySelector('.node[data-id="'+n.id+'"]');if(!g)return;
+    var ok=hay(n).indexOf(v)>-1;
+    g.classList.toggle("hit",ok);g.classList.toggle("dim",!ok);
+    if(ok)found++;
+  });
+  document.querySelectorAll("#gedge [data-from],#glabel [data-from]").forEach(function(p){p.classList.add("dim");});
+  LIBS.forEach(function(L){
+    var shown=0;
+    L.items.forEach(function(it,i){
+      var t=[it.ttl,it.note||"",(it.say||[]).join(" "),(it.list||[]).join(" ")].join(" ").toLowerCase();
+      var b=document.querySelector('.lib li button[data-k="'+L.key+'"][data-i="'+i+'"]');
+      if(!b)return;var ok=t.indexOf(v)>-1;b.style.display=ok?"":"none";if(ok)shown++;
+    });
+    var d=document.querySelector('details[data-k="'+L.key+'"]');
+    if(d){d.open=shown>0;d.style.display=shown?"":"none";}
+  });
+  if(!found&&v.length>1)detail.innerHTML='<div class="dempty"><p>По запросу «'+esc(q.value)+'» на схеме ничего не найдено. Загляните в библиотеки слева — возражения, FAQ и стоп-условия ищутся вместе со схемой.</p></div>';
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="/"&&document.activeElement!==q){e.preventDefault();q.focus();q.select();}
+  if(e.key==="Escape"){q.value="";q.dispatchEvent(new Event("input"));q.blur();}
+});
+
+startView();
+showNode("start");
+})();
+</script>
