@@ -134,6 +134,7 @@ details.lib[open] summary{border-bottom:1px solid var(--line);border-radius:8px 
 .node .stg{font:600 9.5px/1 var(--mono);fill:var(--ink-3);letter-spacing:.06em}
 .node .pausebar{fill:var(--ask);opacity:.9}
 .node .entrystub{fill:none;stroke:var(--line-2);stroke-width:1.8;stroke-dasharray:3 3}
+.node .entrylbl{font:600 9.5px/1 var(--mono);fill:var(--ink-3);letter-spacing:.02em;text-anchor:end}
 .node[data-t="say"] .box{stroke:var(--say)}
 .node[data-t="ask"] .box{fill:var(--ask-soft);stroke:var(--ask)}
 .node[data-t="service"] .box{fill:var(--svc-soft);stroke:var(--svc);stroke-dasharray:5 3}
@@ -238,7 +239,7 @@ details.lib[open] summary{border-bottom:1px solid var(--line);border-radius:8px 
       <div class="lg"><span class="sw svc"></span> Служебное — вслух НЕ произносить</div>
       <div class="lg"><span class="sw end"></span> Завершение диалога</div>
       <div class="lg"><span class="sw pause"><i></i><i></i></span> Ждать ответа клиента</div>
-      <div class="lg"><span class="sw entry"></span> Вход из любой точки — по просьбе клиента</div>
+      <div class="lg"><span class="sw entry"></span> Вход из любой точки разговора — предшественника на схеме нет</div>
     </div>
 
     <h2>Ветки сценария</h2>
@@ -423,16 +424,16 @@ var NODES=[
   say:["В течение недели с номера 0321 с вами свяжется менеджер, расскажет, как им пользоваться, и при необходимости ответит на вопросы.","Ещё вы всегда можете обратиться в чат СберБизнес или на номер 0321, если вопросы возникнут раньше. Всего доброго!"],
   note:"Прощание <strong>обязательно во всех сценариях</strong>, не только при отказе. Это <strong>этап 6</strong> — обычная реплика с текстом. Функцию dialog_end в ней не вызывай: она вызывается отдельно, на этапе 7."},
 
- {id:"e6_instr",x:1545,y:1236,t:"ask",b:["refuse"],stage:"ЭТАП 6",ttl:"СМС с ИНСТРУКЦИЕЙ",lines:"212–213",
+ {id:"e6_instr",x:1430,y:1236,t:"ask",b:["refuse"],stage:"ЭТАП 6",ttl:"СМС с ИНСТРУКЦИЕЙ",lines:"212–213",
   say:["Могу отправить вам СМС со ссылкой на инструкцию по подключению сервиса после нашего разговора. Если появятся вопросы – звоните 0321, добавочный один, вам обязательно помогут. Подскажите, удобно ли так будет?"],wait:true,
   note:"Когда клиенту неудобно оформить на звонке или он хочет оформить самостоятельно.",
   next:[["согласие","e6_agree"],["отказ","e6_bye"]]},
 
- {id:"e6_desc",x:40,y:1240,t:"ask",b:["leader","refuse"],stage:"ЭТАП 6",ttl:"СМС с ОПИСАНИЕМ",lines:"214–215",
+ {id:"e6_desc",x:1800,y:1236,t:"ask",b:["leader","refuse"],stage:"ЭТАП 6",ttl:"СМС с ОПИСАНИЕМ",lines:"214–215",
+  entry:"клиент сомневается\nили просит почитать",
   say:["Могу отправить вам СМС со ссылкой на описание зарплатного проекта после нашего разговора. Если появятся вопросы – звоните 0321, добавочный один, вам обязательно помогут. Подскажите, удобно ли так будет?"],wait:true,
-  entry:true,
   note:"Предлагается, когда клиент хочет почитать или подумать, но <strong>сам ещё не попросил</strong> прислать информацию. Входит из любой точки разговора — отдельной стрелки нет именно поэтому. Если клиент попросил сам, согласие не переспрашивай: сразу подтверди отправку (см. «Согласие на СМС»).",
-  see:[["согласие","e6_agree"],["отказ","e6_bye"]]},
+  next:[["согласие","e6_agree"],["отказ","e6_bye"]]},
 
  {id:"e6_agree",x:1430,y:1372,t:"end",b:["refuse"],stage:"ЭТАП 6",ttl:"Согласие на СМС",lines:"216–217",
   say:["Хорошо, отправлю после нашего разговора. Всего доброго!","Хорошо, отправлю вам СМС после нашего разговора. Если появятся вопросы — звоните 0321, добавочный один. Всего доброго!"],
@@ -744,8 +745,12 @@ NODES.forEach(function(n){
   /* шаг входит по просьбе клиента из любой точки — рисуем пунктирный «хвост»,
      иначе карточка без входящей стрелки читается как забытая */
   if(n.entry){
-    g.appendChild(el("path",{d:"M-30,"+(n._h/2)+" L-8,"+(n._h/2),"class":"entrystub",
+    g.appendChild(el("path",{d:"M-86,"+(n._h/2)+" L-8,"+(n._h/2),"class":"entrystub",
       "marker-end":"url(#arw)"}));
+    (n.entry.split ? n.entry.split("\n") : []).forEach(function(s,i){
+      var t=el("text",{x:-14,y:n._h/2-8-(1-i)*11,"class":"entrylbl"});
+      t.textContent=s;g.appendChild(t);
+    });
   }
   if(n.wait){
     g.setAttribute("aria-label",n.ttl+" — ждать ответа клиента");
@@ -797,7 +802,7 @@ NODES.forEach(function(n){
 var svg=document.getElementById("svg"),cam=document.getElementById("cam"),stage=document.getElementById("stage");
 var view={x:0,y:0,k:1};
 function apply(){cam.setAttribute("transform","translate("+view.x+","+view.y+") scale("+view.k+")");}
-var BW=2060,BH=2500,SPINE=880;
+var BW=2150,BH=2500,SPINE=880;
 function fitAll(){
   /* обзор: вся карта целиком (текст мелкий — это осознанно, для общего вида) */
   var r=stage.getBoundingClientRect(),pad=20;
